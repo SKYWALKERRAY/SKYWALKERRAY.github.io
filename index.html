@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tianning Chai</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg: #ffffff;
+            --surface: #f8f9fa;
+            --text: #1a1a1a;
+            --text-dim: #666666;
+            --accent: #0051ff;
+            --border: 1px solid #e5e7eb;
+            --mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--mono);
+            line-height: 1.6;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 60px 24px;
+        }
+
+        h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.5rem; }
+        h2 { 
+            font-size: 0.85rem; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            letter-spacing: 0.06em; 
+            margin: 3rem 0 1.5rem 0; 
+            border-bottom: 2px solid #000; 
+            padding-bottom: 0.5rem; 
+            display: inline-block;
+        }
+        
+        p { max-width: 700px; color: #333; margin-bottom: 1rem; font-size: 0.95rem; }
+        
+        a { color: var(--text); text-decoration: none; border-bottom: 1px solid #ddd; transition: all 0.2s ease; }
+        a:hover { border-color: #000; background: #000; color: #fff; }
+        
+        .me { font-weight: 700; border: none; }
+
+        .header-meta { display: flex; gap: 24px; font-size: 0.8rem; color: var(--text-dim); margin-top: 12px; margin-bottom: 48px; }
+
+        .viz-panel {
+            background: var(--surface);
+            border: var(--border);
+            border-radius: 8px;
+            padding: 24px;
+            margin: 2.5rem 0;
+            display: grid;
+            grid-template-columns: 220px 1fr 240px;
+            gap: 32px;
+            font-size: 0.75rem;
+            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.03);
+        }
+
+        .viz-col h3 {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #888;
+            margin-bottom: 16px;
+            font-weight: 700;
+        }
+
+        .token-stream { display: flex; flex-direction: column; gap: 4px; }
+        .token {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 4px 8px; background: #fff;
+            border: 1px solid transparent; border-radius: 4px;
+            font-size: 0.8rem; transition: all 0.2s;
+        }
+        .token.active { background: #e0e7ff; border-color: #c7d2fe; color: #3730a3; font-weight: 700; }
+        .token-id { font-size: 0.65em; color: #aaa; font-family: var(--mono); }
+
+        .matrix-container { display: flex; flex-direction: column; align-items: center; }
+        .attn-grid {
+            display: grid; grid-template-columns: repeat(10, 1fr); grid-template-rows: repeat(10, 1fr);
+            gap: 1px; background: #fff; border: 1px solid #eee;
+            width: 220px; height: 220px;
+        }
+        .cell { width: 100%; height: 100%; transition: background 0.1s; }
+        .meta-info { margin-top: 12px; font-size: 0.7rem; color: #888; text-align: center; }
+
+        .logits-list { display: flex; flex-direction: column; gap: 10px; }
+        .logit-row { display: flex; flex-direction: column; gap: 4px; }
+        .logit-header { display: flex; justify-content: space-between; font-size: 0.75rem; }
+        .logit-bar-bg { height: 4px; background: #e5e7eb; border-radius: 2px; overflow: hidden; }
+        .logit-bar-fill { height: 100%; background: var(--text-dim); border-radius: 2px; transition: width 0.3s ease; }
+        .logit-top .logit-bar-fill { background: var(--accent); } 
+        .logit-top .logit-token { font-weight: 700; color: #000; }
+
+        .list-container { list-style: none; padding-left: 10px; }
+        .list-item { 
+            margin-bottom: 32px; 
+            border-left: 2px solid #eee; 
+            padding-left: 24px; 
+            transition: border-color 0.2s; 
+        }
+        .list-item:hover { border-left-color: var(--accent); }
+        .item-title { font-size: 1rem; font-weight: 700; margin-bottom: 6px; color: #000; }
+        .item-meta { font-size: 0.75rem; color: var(--text-dim); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+        .item-desc { font-size: 0.9rem; color: #444; line-height: 1.5; }
+
+        @media (max-width: 850px) {
+            .viz-panel { grid-template-columns: 1fr; gap: 40px; }
+            .matrix-container { align-items: flex-start; }
+        }
+
+        .secret-dot-container {
+            text-align: center; padding: 60px 0 20px 0;
+            display: flex; justify-content: center; align-items: center;
+        }
+        
+        .secret-dot {
+            width: 5px; height: 5px; 
+            background-color: #f2f2f2;
+            border-radius: 50%; cursor: pointer; 
+            transition: all 0.6s ease;
+        }
+        .secret-dot:hover { 
+            transform: scale(1.5); 
+            background-color: #ccc; 
+        }
+
+        #matrix-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #fff;
+            z-index: 9999;
+            display: none; opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        canvas { display: block; }
+
+        #final-msg-container {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center; 
+            display: none;
+            width: 90%; max-width: 800px;
+        }
+
+        #final-msg {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.6rem; 
+            font-weight: 700; color: #000;
+            line-height: 2.2;
+            white-space: pre-wrap;
+        }
+        
+        .centered-text { text-align: center !important; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Tianning Chai</h1>
+        <div class="header-meta">
+            <a href="mailto:cray85479@gmail.com">EMAIL</a>
+            <a href="https://scholar.google.com/citations?user=SlQIPRsAAAAJ&hl=en" target="_blank">GOOGLE SCHOLAR</a>
+        </div>
+    </header>
+
+    <section>
+        <p>
+            I am currently a research intern at <strong>BAIR</strong> (Berkeley Artificial Intelligence Research), advised by Dr. <strong>Roei Herzig</strong> and Prof. <strong>Trevor Darrell</strong>. Previously I obtained my B.Eng from <strong>Wuhan University</strong>, advised by Prof. <strong>Mang Ye</strong>.
+        </p>
+    </section>
+
+    <div class="viz-panel">
+        <div class="viz-col">
+            <h3>Input Stream (Window: 10)</h3>
+            <div class="token-stream" id="token-list"></div>
+        </div>
+
+        <div class="viz-col">
+            <div class="matrix-container">
+                <h3 style="margin-bottom:5px; color:#000;">Attention Map</h3>
+                <span style="font-size:0.65rem; color:#999; margin-bottom:15px;">Layer 11 / Head 4 (Softmax)</span>
+                <div class="attn-grid" id="attn-grid"></div>
+                <div class="meta-info">
+                    <div>&gt; forward_pass(hidden_states)</div>
+                    <div>&gt; extracting_activations...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="viz-col">
+            <h3>Next Token Probs (Top-K)</h3>
+            <div class="logits-list" id="logits-list"></div>
+        </div>
+    </div>
+
+    <h2 style="border:none; margin-bottom: 1rem;">Selected Publications</h2>
+    <ul class="list-container">
+        <li class="list-item">
+            <div class="item-title">Activation Rewards Models for Few-Shot Model Alignment</div>
+            <div class="item-meta">Preprint 2025</div>
+            <div class="item-desc">
+                <span class="me">Tianning Chai*</span>, Chancharik Mitra*, Brandon Huang, Gautam Rajendrakumar Gare, Zhiqiu Lin, Assaf Arbelle, Leonind Karlinsky, Rogerio Feris, Trevor Darrell, Deva Ramanan, Roei Herzig
+            </div>
+        </li>
+        <li class="list-item">
+            <div class="item-title">Enhancing Few-Shot Vision-Language Classification with Large Multimodal Model Features</div>
+            <div class="item-meta">ICCV 2025</div>
+            <div class="item-desc">
+                Chancharik Mitra*, Brandon Huang*, <span class="me">Tianning Chai</span>, Zhiqiu Lin, Assaf Arbelle, Rogerio Feris, Leonid Karlinsky, Trevor Darrell, Deva Ramanan, Roei Herzig
+            </div>
+        </li>
+        <li class="list-item">
+            <div class="item-title">Decentralized Federated Learning via Third-Party Bridge Collaboration</div>
+            <div class="item-meta">Preprint 2024</div>
+            <div class="item-desc">
+                <span class="me">Tianning Chai</span>, Mang Ye, Wenke Huang, Chun-Mei Feng
+            </div>
+        </li>
+    </ul>
+
+    <footer>
+        <div style="font-size: 0.75rem; color: #999; margin-top: 60px;">
+            &copy; 2025 Tianning Chai. 
+        </div>
+        
+        <div class="secret-dot-container">
+            <div class="secret-dot" id="secret-trigger" title="Dependent Origination"></div>
+        </div>
+    </footer>
+
+    <div id="matrix-overlay">
+        <canvas id="matrix-canvas"></canvas>
+        <div id="final-msg-container">
+            <div id="final-msg" class="centered-text"></div>
+        </div>
+    </div>
+
+    <script>
+        const fullSequence = ["_Activation", "_reward", "_models", "_align", "_large", "_language", "_models", "_via", "_latent", "_feature", "_steering", "_in", "_high", "_dimensional", "_space", "_to", "_improve", "_safety"];
+        const vocab = ["_obs", "_state", "_policy", "_value", "_head", "_attn", "_norm", "_vision", "_context", "_logit", "_bias", "_weight", "_optim", "_loss", "_grad"];
+        let currentIdx = 0; 
+        const maxContext = 10;
+        const tokenListEl = document.getElementById('token-list');
+        const attnGridEl = document.getElementById('attn-grid');
+        const logitsListEl = document.getElementById('logits-list');
+
+        for (let i = 0; i < 100; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            attnGridEl.appendChild(cell);
+        }
+        const cells = document.querySelectorAll('.cell');
+
+        function pseudoRandom(seed) { let x = Math.sin(seed) * 10000; return x - Math.floor(x); }
+        function getTokenID(str) { let hash = 0; for (let i = 0; i < str.length; i++) { hash = ((hash << 5) - hash) + str.charCodeAt(i); hash |= 0; } return Math.abs(hash % 30000) + 256; }
+        function getHeatmapColor(value) { if (value < 0.2) return '#fff'; if (value < 0.4) return '#31688e'; if (value < 0.7) return '#35b779'; return '#fde725'; }
+
+        function step() {
+            const visibleTokens = fullSequence.slice(0, currentIdx + 1).slice(-maxContext);
+            const offset = Math.max(0, currentIdx + 1 - maxContext);
+            
+            tokenListEl.innerHTML = '';
+            visibleTokens.forEach((t, i) => {
+                const div = document.createElement('div');
+                div.className = (i === visibleTokens.length - 1) ? 'token active' : 'token';
+                div.innerHTML = `<span>${t}</span><span class="token-id">${getTokenID(t)}</span>`;
+                tokenListEl.appendChild(div);
+            });
+
+            cells.forEach((cell, i) => {
+                const row = Math.floor(i / 10);
+                const col = i % 10;
+                cell.style.background = '#fff';
+
+                if (row < visibleTokens.length && col < visibleTokens.length) {
+                    if (col <= row) {
+                        const absRow = offset + row; const absCol = offset + col; const seed = absRow * 1337 + absCol;
+                        const randVal = pseudoRandom(seed); let score = 0;
+                        if (row === col) score = 0.75 + (randVal * 0.25); 
+                        else if (absCol === 0) score = 0.45 + (randVal * 0.2); 
+                        else score = Math.pow(randVal, 3) * 0.6; 
+                        if(score > 1) score = 1;
+                        cell.style.background = getHeatmapColor(score);
+                    } else { cell.style.background = '#f8f9fa'; }
+                }
+            });
+
+            logitsListEl.innerHTML = '';
+            let nextIdx = currentIdx + 1;
+            if (nextIdx >= fullSequence.length) nextIdx = 0;
+            const targetToken = fullSequence[nextIdx];
+            const candidates = [{ t: targetToken, p: 0.7 + Math.random() * 0.2 }, { t: vocab[Math.floor(Math.random()*vocab.length)], p: 0.1 + Math.random() * 0.1 }, { t: vocab[Math.floor(Math.random()*vocab.length)], p: 0.05 }, { t: vocab[Math.floor(Math.random()*vocab.length)], p: 0.01 }].sort((a,b) => b.p - a.p);
+
+            candidates.forEach((c, i) => {
+                const isTop = i === 0; const pPercent = (c.p * 100).toFixed(1);
+                const row = document.createElement('div');
+                row.className = `logit-row ${isTop ? 'logit-top' : ''}`;
+                row.innerHTML = `<div class="logit-header"><span class="logit-token">${c.t}</span><span style="font-family:monospace; color:#aaa;">${pPercent}%</span></div><div class="logit-bar-bg"><div class="logit-bar-fill" style="width: ${pPercent}%"></div></div>`;
+                logitsListEl.appendChild(row);
+            });
+            currentIdx++; if (currentIdx >= fullSequence.length) currentIdx = 0;
+        }
+        step(); setInterval(step, 1000);
+
+        const VERSES = [
+            "Hello World"
+        ];
+
+        const trigger = document.getElementById('secret-trigger');
+        const overlay = document.getElementById('matrix-overlay');
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+        const msgContainer = document.getElementById('final-msg-container');
+        const msgEl = document.getElementById('final-msg');
+        
+        let isActive = false;
+        let animationId;
+
+        trigger.addEventListener('click', () => {
+            if (isActive) return;
+            isActive = true;
+            
+            overlay.style.display = 'block';
+            void overlay.offsetWidth; 
+            overlay.style.opacity = '1';
+            
+            startZenMatrix();
+        });
+
+        function startZenMatrix() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&<>[]{}|:=-*/";
+            const fontSize = 18;
+            const columns = canvas.width / fontSize;
+            const drops = [];
+
+            for(let i = 0; i < columns; i++) {
+                drops[i] = 1;
+            }
+
+            let lastTime = 0;
+            const fps = 20;
+            const interval = 1000 / fps;
+
+            let totalFrames = 0;
+            const maxFrames = 150;
+
+            function draw(currentTime) {
+                if (!isActive) return;
+                animationId = requestAnimationFrame(draw);
+
+                const delta = currentTime - lastTime;
+                if (delta < interval) return;
+
+                lastTime = currentTime - (delta % interval);
+
+                ctx.fillStyle = "rgba(255, 255, 255, 0.08)"; 
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.fillStyle = "rgba(0, 0, 0, 0.85)"; 
+                ctx.font = "700 " + fontSize + "px 'JetBrains Mono'";
+
+                for(let i = 0; i < drops.length; i++) {
+                    const text = chars.charAt(Math.floor(Math.random() * chars.length));
+                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                    if(drops[i] * fontSize > canvas.height && Math.random() > 0.985) {
+                        drops[i] = 0;
+                    }
+                    drops[i]++;
+                }
+
+                totalFrames++;
+                if (totalFrames > maxFrames) {
+                    cancelAnimationFrame(animationId);
+                    endMatrixAndType();
+                }
+            }
+            
+            requestAnimationFrame(draw);
+        }
+
+        async function endMatrixAndType() {
+            const fadeSteps = 20;
+            for (let i = 0; i < fadeSteps; i++) {
+                ctx.fillStyle = `rgba(255, 255, 255, ${i / fadeSteps})`;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                await new Promise(r => setTimeout(r, 30));
+            }
+            ctx.fillStyle = "#fff";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            msgContainer.style.display = 'block';
+            msgEl.innerHTML = "";
+            
+            const charDelay = 180;
+            const lineDelay = 1500;
+
+            for (let lineIndex = 0; lineIndex < VERSES.length; lineIndex++) {
+                const line = VERSES[lineIndex];
+                
+                for (let charIndex = 0; charIndex < line.length; charIndex++) {
+                    msgEl.textContent += line[charIndex];
+                    await new Promise(r => setTimeout(r, charDelay));
+                }
+
+                if (lineIndex < VERSES.length - 1) {
+                    msgEl.textContent += "\n";
+                    await new Promise(r => setTimeout(r, lineDelay));
+                }
+            }
+
+            setTimeout(() => {
+                overlay.style.cursor = 'pointer';
+                overlay.title = "Click to return";
+                overlay.addEventListener('click', () => {
+                    location.reload();
+                });
+            }, 2000);
+        }
+
+        window.addEventListener('resize', () => {
+            if (isActive) {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+        });
+    </script>
+</body>
+</html>
