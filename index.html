@@ -125,42 +125,57 @@
         
         .secret-dot {
             width: 5px; height: 5px; 
-            background-color: #f2f2f2;
+            background-color: #f0f0f0; 
             border-radius: 50%; cursor: pointer; 
             transition: all 0.6s ease;
         }
         .secret-dot:hover { 
             transform: scale(1.5); 
-            background-color: #ccc; 
+            background-color: #0051ff; 
         }
 
-        #matrix-overlay {
+        #voxel-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: #fff;
             z-index: 9999;
             display: none; opacity: 0;
-            transition: opacity 1s ease-in-out;
+            transition: opacity 1.5s ease-in-out;
         }
 
         canvas { display: block; }
 
-        #final-msg-container {
+        #voxel-msg-container {
             position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             text-align: center; 
             display: none;
-            width: 90%; max-width: 800px;
+            width: 100%;
+            pointer-events: none;
         }
 
-        #final-msg {
+        #voxel-msg {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 1.6rem; 
-            font-weight: 700; color: #000;
-            line-height: 2.2;
+            font-size: 2rem; 
+            font-weight: 700; 
+            color: #1a1a1a; 
             white-space: pre-wrap;
+            text-shadow: 0 0 20px rgba(255,255,255,0.9); 
+            opacity: 1;
+            mix-blend-mode: difference; 
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
         }
         
-        .centered-text { text-align: center !important; }
+        .cursor {
+            display: inline-block;
+            width: 10px; height: 2rem;
+            background: rgb(0, 255, 200);
+            margin-left: 8px;
+            animation: blink 1s infinite;
+            vertical-align: bottom;
+        }
+
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
     </style>
 </head>
 <body>
@@ -230,18 +245,18 @@
 
     <footer>
         <div style="font-size: 0.75rem; color: #999; margin-top: 60px;">
-            &copy; 2025 Tianning Chai. 
+            &copy; 2025 Tianning Chai. All systems nominal.
         </div>
         
         <div class="secret-dot-container">
-            <div class="secret-dot" id="secret-trigger" title="Dependent Origination"></div>
+            <div class="secret-dot" id="secret-trigger" title="Manifold"></div>
         </div>
     </footer>
 
-    <div id="matrix-overlay">
-        <canvas id="matrix-canvas"></canvas>
-        <div id="final-msg-container">
-            <div id="final-msg" class="centered-text"></div>
+    <div id="voxel-overlay">
+        <canvas id="voxel-canvas"></canvas>
+        <div id="voxel-msg-container">
+            <span id="voxel-msg"></span><span class="cursor"></span>
         </div>
     </div>
 
@@ -268,7 +283,6 @@
         function step() {
             const visibleTokens = fullSequence.slice(0, currentIdx + 1).slice(-maxContext);
             const offset = Math.max(0, currentIdx + 1 - maxContext);
-            
             tokenListEl.innerHTML = '';
             visibleTokens.forEach((t, i) => {
                 const div = document.createElement('div');
@@ -276,12 +290,10 @@
                 div.innerHTML = `<span>${t}</span><span class="token-id">${getTokenID(t)}</span>`;
                 tokenListEl.appendChild(div);
             });
-
             cells.forEach((cell, i) => {
                 const row = Math.floor(i / 10);
                 const col = i % 10;
                 cell.style.background = '#fff';
-
                 if (row < visibleTokens.length && col < visibleTokens.length) {
                     if (col <= row) {
                         const absRow = offset + row; const absCol = offset + col; const seed = absRow * 1337 + absCol;
@@ -294,13 +306,11 @@
                     } else { cell.style.background = '#f8f9fa'; }
                 }
             });
-
             logitsListEl.innerHTML = '';
-            let nextIdx = currentIdx + 1;
-            if (nextIdx >= fullSequence.length) nextIdx = 0;
+            let nextIdx = currentIdx + 1; if (nextIdx >= fullSequence.length) nextIdx = 0;
             const targetToken = fullSequence[nextIdx];
-            const candidates = [{ t: targetToken, p: 0.7 + Math.random() * 0.2 }, { t: vocab[Math.floor(Math.random()*vocab.length)], p: 0.1 + Math.random() * 0.1 }, { t: vocab[Math.floor(Math.random()*vocab.length)], p: 0.05 }, { t: vocab[Math.floor(Math.random()*vocab.length)], p: 0.01 }].sort((a,b) => b.p - a.p);
-
+            const w1 = Math.random() * 8 + 4; const w2 = Math.random() * 2; const w3 = Math.random() * 1.5; const w4 = Math.random() * 0.5; const totalW = w1 + w2 + w3 + w4;
+            const candidates = [{ t: targetToken, p: w1 / totalW }, { t: vocab[Math.floor(Math.random()*vocab.length)], p: w2 / totalW }, { t: vocab[Math.floor(Math.random()*vocab.length)], p: w3 / totalW }, { t: vocab[Math.floor(Math.random()*vocab.length)], p: w4 / totalW }].sort((a,b) => b.p - a.p);
             candidates.forEach((c, i) => {
                 const isTop = i === 0; const pPercent = (c.p * 100).toFixed(1);
                 const row = document.createElement('div');
@@ -312,19 +322,78 @@
         }
         step(); setInterval(step, 1000);
 
-        const VERSES = [
-            "Hello World"
-        ];
+        const FINAL_MSG = "Hello World";
 
         const trigger = document.getElementById('secret-trigger');
-        const overlay = document.getElementById('matrix-overlay');
-        const canvas = document.getElementById('matrix-canvas');
+        const overlay = document.getElementById('voxel-overlay');
+        const canvas = document.getElementById('voxel-canvas');
         const ctx = canvas.getContext('2d');
-        const msgContainer = document.getElementById('final-msg-container');
-        const msgEl = document.getElementById('final-msg');
-        
+        const msgContainer = document.getElementById('voxel-msg-container');
+        const msgEl = document.getElementById('voxel-msg');
+
         let isActive = false;
         let animationId;
+        
+        let gridMap = new Map();
+        
+        let time = 0;
+        let rotation = 0;
+        
+        const SCALE = 16; 
+        const BOUNDS = 18; 
+
+        function getColor(t, signalStrength) {
+            const stops = [
+                { pos: 0.0, r: 0, g: 255, b: 200 },   
+                { pos: 0.4, r: 0, g: 80, b: 220 },   
+                { pos: 0.7, r: 120, g: 40, b: 240 },  
+                { pos: 1.0, r: 220, g: 80, b: 150 }  
+            ];
+            
+            if(t<0) t=0; if(t>1) t=1;
+            
+            let r, g, b;
+            
+            for (let i = 0; i < stops.length - 1; i++) {
+                if (t >= stops[i].pos && t <= stops[i+1].pos) {
+                    const localT = (t - stops[i].pos) / (stops[i+1].pos - stops[i].pos);
+                    r = Math.floor(stops[i].r + (stops[i+1].r - stops[i].r) * localT);
+                    g = Math.floor(stops[i].g + (stops[i+1].g - stops[i].g) * localT);
+                    b = Math.floor(stops[i].b + (stops[i+1].b - stops[i].b) * localT);
+                    break;
+                }
+            }
+            if (!r) { r=stops[stops.length-1].r; g=stops[stops.length-1].g; b=stops[stops.length-1].b; }
+
+            if (signalStrength > 0) {
+                r = Math.min(255, r + signalStrength * 200);
+                g = Math.min(255, g + signalStrength * 255);
+                b = Math.min(255, b + signalStrength * 255);
+            }
+
+            return { r, g, b };
+        }
+
+        function getGyroidField(x, y, z, t) {
+            const s = 0.22; 
+            const phase = t * 0.3;
+            const val = Math.sin(x*s + phase) * Math.cos(y*s) + 
+                        Math.sin(y*s + phase) * Math.cos(z*s) + 
+                        Math.sin(z*s + phase) * Math.cos(x*s);
+            return val;
+        }
+
+        function getThinkingSignal(x, y, z, t) {
+            const noise = Math.sin(x*0.3 + t*4) * Math.cos(y*0.3 - t*2) * Math.sin(z*0.3 + t*3);
+            return Math.max(0, noise - 0.7) * 3.3; 
+        }
+
+        function initScene() {
+            gridMap.clear();
+            time = 0;
+            rotation = 0;
+            msgEl.innerText = "";
+        }
 
         trigger.addEventListener('click', () => {
             if (isActive) return;
@@ -334,109 +403,164 @@
             void overlay.offsetWidth; 
             overlay.style.opacity = '1';
             
-            startZenMatrix();
+            initScene();
+            resize();
+            loop();
+            
+            setTimeout(typeText, 5000);
         });
 
-        function startZenMatrix() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            
-            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&<>[]{}|:=-*/";
-            const fontSize = 18;
-            const columns = canvas.width / fontSize;
-            const drops = [];
-
-            for(let i = 0; i < columns; i++) {
-                drops[i] = 1;
-            }
-
-            let lastTime = 0;
-            const fps = 20;
-            const interval = 1000 / fps;
-
-            let totalFrames = 0;
-            const maxFrames = 150;
-
-            function draw(currentTime) {
-                if (!isActive) return;
-                animationId = requestAnimationFrame(draw);
-
-                const delta = currentTime - lastTime;
-                if (delta < interval) return;
-
-                lastTime = currentTime - (delta % interval);
-
-                ctx.fillStyle = "rgba(255, 255, 255, 0.08)"; 
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                ctx.fillStyle = "rgba(0, 0, 0, 0.85)"; 
-                ctx.font = "700 " + fontSize + "px 'JetBrains Mono'";
-
-                for(let i = 0; i < drops.length; i++) {
-                    const text = chars.charAt(Math.floor(Math.random() * chars.length));
-                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
-                    if(drops[i] * fontSize > canvas.height && Math.random() > 0.985) {
-                        drops[i] = 0;
-                    }
-                    drops[i]++;
+        function typeText() {
+            msgContainer.style.display = 'block';
+            let i = 0;
+            const interval = setInterval(() => {
+                msgEl.innerText += FINAL_MSG.charAt(i);
+                i++;
+                if (i >= FINAL_MSG.length) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        overlay.style.cursor = 'pointer';
+                        overlay.title = "Click to return";
+                        overlay.addEventListener('click', () => {
+                            location.reload();
+                        });
+                    }, 1000);
                 }
-
-                totalFrames++;
-                if (totalFrames > maxFrames) {
-                    cancelAnimationFrame(animationId);
-                    endMatrixAndType();
-                }
-            }
-            
-            requestAnimationFrame(draw);
+            }, 200);
         }
 
-        async function endMatrixAndType() {
-            const fadeSteps = 20;
-            for (let i = 0; i < fadeSteps; i++) {
-                ctx.fillStyle = `rgba(255, 255, 255, ${i / fadeSteps})`;
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                await new Promise(r => setTimeout(r, 30));
-            }
+        function shadeColor(c, percent) {
+            let R = parseInt(c.r * (100 + percent) / 100);
+            let G = parseInt(c.g * (100 + percent) / 100);
+            let B = parseInt(c.b * (100 + percent) / 100);
+            R = (R<255)?R:255; G = (G<255)?G:255; B = (B<255)?B:255;
+            return `rgb(${R},${G},${B})`;
+        }
+
+        function drawCube(x, y, z, scale, color, cx, cy, sinR, cosR) {
+            const rx = x * cosR - z * sinR;
+            const rz = x * sinR + z * cosR;
+            const ry = y;
+
+            const isoX = (rx - rz) * SCALE * 0.866;
+            const isoY = (rx + rz) * SCALE * 0.5 - (ry * SCALE);
+
+            const screenX = cx + isoX;
+            const screenY = cy + isoY;
+
+            const size = SCALE * scale;
+
+            const cTop = `rgb(${color.r}, ${color.g}, ${color.b})`;
+            const cRight = shadeColor(color, -20);
+            const cLeft = shadeColor(color, -40);
+
+            ctx.beginPath();
+            ctx.moveTo(screenX, screenY - size);
+            ctx.lineTo(screenX + size * 0.866, screenY - size * 0.5);
+            ctx.lineTo(screenX, screenY);
+            ctx.lineTo(screenX - size * 0.866, screenY - size * 0.5);
+            ctx.closePath();
+            ctx.fillStyle = cTop;
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.moveTo(screenX, screenY);
+            ctx.lineTo(screenX + size * 0.866, screenY - size * 0.5);
+            ctx.lineTo(screenX + size * 0.866, screenY + size * 0.5);
+            ctx.lineTo(screenX, screenY + size);
+            ctx.closePath();
+            ctx.fillStyle = cRight;
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.moveTo(screenX, screenY);
+            ctx.lineTo(screenX - size * 0.866, screenY - size * 0.5);
+            ctx.lineTo(screenX - size * 0.866, screenY + size * 0.5);
+            ctx.lineTo(screenX, screenY + size);
+            ctx.closePath();
+            ctx.fillStyle = cLeft;
+            ctx.fill();
+        }
+
+        function loop() {
+            if (!isActive) return;
+            animationId = requestAnimationFrame(loop);
+
             ctx.fillStyle = "#fff";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            msgContainer.style.display = 'block';
-            msgEl.innerHTML = "";
-            
-            const charDelay = 180;
-            const lineDelay = 1500;
 
-            for (let lineIndex = 0; lineIndex < VERSES.length; lineIndex++) {
-                const line = VERSES[lineIndex];
-                
-                for (let charIndex = 0; charIndex < line.length; charIndex++) {
-                    msgEl.textContent += line[charIndex];
-                    await new Promise(r => setTimeout(r, charDelay));
-                }
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
 
-                if (lineIndex < VERSES.length - 1) {
-                    msgEl.textContent += "\n";
-                    await new Promise(r => setTimeout(r, lineDelay));
+            time += 0.005; 
+            rotation += 0.0015; 
+            
+            const sinR = Math.sin(rotation);
+            const cosR = Math.cos(rotation);
+
+            const renderList = [];
+
+            for (let x = -BOUNDS; x <= BOUNDS; x++) {
+                for (let y = -BOUNDS; y <= BOUNDS; y++) {
+                    for (let z = -BOUNDS; z <= BOUNDS; z++) {
+                        
+                        const dist = Math.sqrt(x*x + y*y + z*z);
+                        if(dist > BOUNDS) continue;
+
+                        const val = getGyroidField(x, y, z, time);
+                        const signal = getThinkingSignal(x, y, z, time);
+                        
+                        const thickness = 0.12; 
+                        const key = `${x},${y},${z}`;
+                        
+                        let voxelData = gridMap.get(key);
+
+                        if (Math.abs(val) < thickness) {
+                            if (!voxelData) {
+                                voxelData = { scale: 0 };
+                                gridMap.set(key, voxelData);
+                            }
+                            if (voxelData.scale < 1) voxelData.scale += 0.02; 
+                            
+                            const rx = x * cosR - z * sinR;
+                            const rz = x * sinR + z * cosR;
+                            const depth = rx + rz + y; 
+                            const col = getColor(dist / BOUNDS, signal);
+                            
+                            renderList.push({x, y, z, scale: voxelData.scale, col, depth});
+
+                        } else {
+                            if (voxelData) {
+                                voxelData.scale -= 0.02; 
+                                if (voxelData.scale <= 0) {
+                                    gridMap.delete(key);
+                                } else {
+                                    const rx = x * cosR - z * sinR;
+                                    const rz = x * sinR + z * cosR;
+                                    const depth = rx + rz + y;
+                                    const col = getColor(dist / BOUNDS, 0);
+                                    renderList.push({x, y, z, scale: voxelData.scale, col, depth});
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
-            setTimeout(() => {
-                overlay.style.cursor = 'pointer';
-                overlay.title = "Click to return";
-                overlay.addEventListener('click', () => {
-                    location.reload();
-                });
-            }, 2000);
+            renderList.sort((a, b) => a.depth - b.depth);
+
+            for (let v of renderList) {
+                drawCube(v.x, v.y, v.z, v.scale, v.col, cx, cy, sinR, cosR);
+            }
         }
 
-        window.addEventListener('resize', () => {
-            if (isActive) {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-            }
-        });
+        function resize() {
+            if (!isActive) return;
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+
     </script>
 </body>
 </html>
