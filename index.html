@@ -43,10 +43,12 @@
             display: inline-block;
         }
         
-        p { max-width: 700px; color: #333; margin-bottom: 1rem; font-size: 0.95rem; }
+        p { color: #333; margin-bottom: 1rem; font-size: 0.95rem; text-align: justify; }
         
         a { color: var(--text); text-decoration: none; border-bottom: 1px solid #ddd; transition: all 0.2s ease; }
         a:hover { border-color: #000; background: #000; color: #fff; }
+        section p a { border-bottom: none; }
+        section p a:hover { background: none; color: var(--accent); }
         
         .me { font-weight: 700; border: none; }
 
@@ -110,6 +112,8 @@
         }
         .list-item:hover { border-left-color: var(--accent); }
         .item-title { font-size: 1rem; font-weight: 700; margin-bottom: 6px; color: #000; }
+        .item-title a { color: inherit; border-bottom: none; }
+        .item-title a:hover { background: none; color: var(--accent); }
         .item-meta { font-size: 0.75rem; color: var(--text-dim); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
         .item-desc { font-size: 0.9rem; color: #444; line-height: 1.5; }
 
@@ -190,7 +194,7 @@
 
     <section>
         <p>
-            I am Tianning Chai (Ray), currently a research intern at <strong>BAIR</strong> (Berkeley Artificial Intelligence Research), working with <strong>Jiaxin Ge</strong>, <strong>Roei Herzig</strong> and Prof. <strong>Trevor Darrell</strong>. Previously I obtained my B.Eng from <strong>Wuhan University</strong>, advised by Prof. <strong>Mang Ye</strong>.
+            I am Tianning Chai (Ray), currently a research intern at <strong><a href="https://bair.berkeley.edu/" target="_blank">BAIR</a></strong> (Berkeley Artificial Intelligence Research), working with <strong><a href="https://gejiaxin.org/" target="_blank">Jiaxin Ge</a></strong>, <strong><a href="https://www.junyi42.com/" target="_blank">Junyi Zhang</a></strong>, <strong><a href="https://havenfeng.github.io/" target="_blank">Haiwen Feng</a></strong>, <strong><a href="https://roeiherz.github.io/" target="_blank">Roei Herzig</a></strong> and Prof. <strong><a href="https://people.eecs.berkeley.edu/~trevor/" target="_blank">Trevor Darrell</a></strong>. Previously I obtained my B.Eng from <strong><a href="https://en.whu.edu.cn/" target="_blank">Wuhan University</a></strong>, advised by Prof. <strong><a href="https://marswhu.github.io/" target="_blank">Mang Ye</a></strong>.
         </p>
     </section>
 
@@ -218,17 +222,17 @@
         </div>
     </div>
 
-    <h2 style="border:none; margin-bottom: 1rem;">Selected Publications</h2>
+    <h2 style="border:none; margin-bottom: 1rem;">Publications</h2>
     <ul class="list-container">
         <li class="list-item">
-            <div class="item-title">Activation Rewards Models for Few-Shot Model Alignment</div>
+            <div class="item-title"><a href="https://arxiv.org/abs/2507.01368" target="_blank">Activation Reward Models for Few-Shot Model Alignment</a></div>
             <div class="item-meta">ACL Findings 2025</div>
             <div class="item-desc">
-                <span class="me">Tianning Chai*</span>, Chancharik Mitra*, Brandon Huang, Gautam Rajendrakumar Gare, Zhiqiu Lin, Assaf Arbelle, Leonind Karlinsky, Rogerio Feris, Trevor Darrell, Deva Ramanan, Roei Herzig
+                <span class="me">Tianning Chai*</span>, Chancharik Mitra*, Brandon Huang, Gautam Rajendrakumar Gare, Zhiqiu Lin, Assaf Arbelle, Leonid Karlinsky, Rogerio Feris, Trevor Darrell, Deva Ramanan, Roei Herzig
             </div>
         </li>
         <li class="list-item">
-            <div class="item-title">Enhancing Few-Shot Vision-Language Classification with Large Multimodal Model Features</div>
+            <div class="item-title"><a href="https://arxiv.org/abs/2412.00142" target="_blank">Enhancing Few-Shot Vision-Language Classification with Large Multimodal Model Features</a></div>
             <div class="item-meta">ICCV 2025</div>
             <div class="item-desc">
                 Chancharik Mitra*, Brandon Huang*, <span class="me">Tianning Chai</span>, Zhiqiu Lin, Assaf Arbelle, Rogerio Feris, Leonid Karlinsky, Trevor Darrell, Deva Ramanan, Roei Herzig
