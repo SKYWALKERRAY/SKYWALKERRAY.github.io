@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Activation Reward Models</title>
+  <meta name="description" content="Project page for Activation Reward Models for Few-Shot Model Alignment.">
+  <meta property="og:title" content="Activation Reward Models for Few-Shot Model Alignment">
+  <meta property="og:description" content="Few-shot reward modeling through activation steering and token probability scoring.">
+  <meta property="og:image" content="assets/Activation_RM_figure_v2.png">
+  <style>
+    :root {
+      --bg: #ffffff;
+      --ink: #151716;
+      --muted: #5f6762;
+      --soft: #f5f7f3;
+      --soft-2: #eef3ed;
+      --line: #d9dfd7;
+      --green: #2f7d4a;
+      --red: #c8453f;
+      --amber: #a96f19;
+      --blue: #205b7d;
+      --max: 1180px;
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.58;
+      letter-spacing: 0;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(32, 91, 125, 0.35);
+    }
+
+    a:hover {
+      color: var(--blue);
+      border-bottom-color: var(--blue);
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(255, 255, 255, 0.94);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+    }
+
+    .topbar-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      font-size: 0.88rem;
+    }
+
+    .brand {
+      font-weight: 760;
+      border-bottom: 0;
+      white-space: nowrap;
+    }
+
+    .nav {
+      display: flex;
+      gap: 18px;
+      align-items: center;
+      flex-wrap: wrap;
+      color: var(--muted);
+    }
+
+    .nav a {
+      border-bottom: 0;
+    }
+
+    .page {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 64px 24px 72px;
+    }
+
+    .paper-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 0.93rem;
+      margin-bottom: 18px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 4px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--soft);
+      color: var(--ink);
+      font-size: 0.78rem;
+      font-weight: 720;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 920px;
+      margin: 0;
+      font-size: 3rem;
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      max-width: 850px;
+      margin: 22px 0 0;
+      color: #303633;
+      font-size: 1.12rem;
+    }
+
+    .authors {
+      max-width: 980px;
+      margin: 26px 0 0;
+      color: #2f3532;
+      font-size: 0.98rem;
+    }
+
+    .affiliations {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 28px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 9px 16px;
+      border: 1px solid var(--ink);
+      border-radius: var(--radius);
+      background: var(--ink);
+      color: #fff;
+      font-weight: 720;
+      font-size: 0.92rem;
+    }
+
+    .button:hover {
+      background: var(--blue);
+      color: #fff;
+      border-color: var(--blue);
+    }
+
+    .button.secondary {
+      background: #fff;
+      color: var(--ink);
+      border-color: var(--line);
+    }
+
+    .button.secondary:hover {
+      background: var(--soft-2);
+      color: var(--ink);
+      border-color: var(--green);
+    }
+
+    .lead-figure {
+      margin-top: 42px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .lead-figure img {
+      width: 100%;
+      background: #fff;
+    }
+
+    .caption {
+      margin: 0;
+      padding: 12px 14px;
+      color: var(--muted);
+      font-size: 0.88rem;
+      border-top: 1px solid var(--line);
+      background: var(--soft);
+    }
+
+    .section {
+      margin-top: 70px;
+      padding-top: 32px;
+      border-top: 1px solid var(--line);
+    }
+
+    .section h2 {
+      margin: 0 0 16px;
+      font-size: 1.55rem;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .section-intro {
+      max-width: 840px;
+      margin: 0 0 26px;
+      color: #343b37;
+      font-size: 1rem;
+    }
+
+    .abstract {
+      max-width: 920px;
+      color: #2f3532;
+      font-size: 1rem;
+    }
+
+    .abstract p {
+      margin: 0 0 16px;
+    }
+
+    .method-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .method-step {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      padding: 18px;
+    }
+
+    .method-step .num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--soft-2);
+      color: var(--green);
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+
+    .method-step h3 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+      line-height: 1.3;
+      letter-spacing: 0;
+    }
+
+    .method-step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin: 26px 0 12px;
+    }
+
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px;
+      background: var(--soft);
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 1.7rem;
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    .stat span {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    .figure-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .figure-block {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      margin-top: 18px;
+    }
+
+    .table-heading {
+      margin: 30px 0 10px;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .table-heading h3 {
+      margin: 0;
+      font-size: 1.05rem;
+      line-height: 1.3;
+      letter-spacing: 0;
+    }
+
+    .table-heading span {
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    .table-wrap.compact table {
+      min-width: 620px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+      font-size: 0.9rem;
+    }
+
+    th,
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    th:first-child,
+    td:first-child {
+      text-align: left;
+      position: sticky;
+      left: 0;
+      background: #fff;
+      z-index: 1;
+    }
+
+    th {
+      background: var(--soft);
+      color: #27302b;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      font-weight: 780;
+    }
+
+    th:first-child {
+      background: var(--soft);
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .group-row td {
+      background: #fbfbfa;
+      color: var(--muted);
+      font-weight: 760;
+      text-align: left;
+    }
+
+    .best {
+      color: var(--green);
+      font-weight: 800;
+    }
+
+    .warn {
+      color: var(--amber);
+      font-weight: 760;
+    }
+
+    .note {
+      max-width: 860px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .release-note {
+      max-width: 760px;
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .dataset-list {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 22px;
+    }
+
+    .dataset {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .dataset h3 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+      letter-spacing: 0;
+    }
+
+    .dataset p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .citation {
+      margin-top: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #111514;
+      color: #f4f5f2;
+      overflow-x: auto;
+    }
+
+    .code-panel {
+      margin-top: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #111514;
+      color: #f4f5f2;
+      overflow-x: auto;
+    }
+
+    pre {
+      margin: 0;
+      padding: 18px;
+      font-size: 0.86rem;
+      line-height: 1.5;
+      font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+    }
+
+    footer {
+      margin-top: 70px;
+      padding-top: 24px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.88rem;
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 900px) {
+      .method-grid,
+      .stat-grid,
+      .figure-grid,
+      .dataset-list {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 2.25rem;
+      }
+
+      .topbar-inner {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .page {
+        padding: 42px 16px 52px;
+      }
+
+      .topbar-inner {
+        padding: 12px 16px;
+      }
+
+      .nav {
+        gap: 12px;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      .subtitle {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../">Tianning Chai</a>
+      <nav class="nav" aria-label="Project navigation">
+        <a href="#method">Method</a>
+        <a href="#preferencehack">PreferenceHack</a>
+        <a href="#results">Results</a>
+        <a href="#citation">Citation</a>
+      </nav>
+    </div>
+  </div>
+
+  <main class="page">
+    <header>
+      <div class="paper-meta">
+        <span class="pill">ACL Findings 2025</span>
+        <span>Few-shot reward modeling from activation interventions</span>
+      </div>
+      <h1>Activation Reward Models for Few-Shot Model Alignment</h1>
+      <p class="subtitle">
+        Activation RMs construct reward signals from a small preference pool by selecting attention heads,
+        extracting denoised activation directions, and scoring candidates with Yes-token probabilities. The central question is whether
+        those few examples can also help the evaluator resist reward-hacking shortcuts.
+      </p>
+      <div class="authors">
+        <a href="https://skywalkerray.github.io/">Tianning Chai*</a>,
+        <a href="https://chancharikmitra.github.io/">Chancharik Mitra*</a>,
+        <a href="https://brandon3964.github.io/">Brandon Huang</a>,
+        <a href="https://ggare-cmu.github.io/">Gautam Rajendrakumar Gare</a>,
+        <a href="https://linzhiqiu.github.io/">Zhiqiu Lin</a>,
+        <a href="https://scholar.google.com/citations?user=uU_V_PsAAAAJ&amp;hl=en">Assaf Arbelle</a>,
+        <a href="https://scholar.google.com/citations?user=WbO7tjYAAAAJ&amp;hl=en">Leonid Karlinsky</a>,
+        <a href="https://www.rogerioferis.org/">Rogerio Feris</a>,
+        <a href="https://people.eecs.berkeley.edu/~trevor/">Trevor Darrell</a>,
+        <a href="https://www.cs.cmu.edu/~deva/">Deva Ramanan</a>,
+        <a href="https://roeiherz.github.io/">Roei Herzig</a>
+      </div>
+      <div class="affiliations">
+        UC Berkeley, CMU, MIT-IBM Watson AI Lab. *Equal contribution.
+      </div>
+      <div class="actions">
+        <a class="button" href="https://arxiv.org/abs/2507.01368">Paper</a>
+        <a class="button secondary" href="https://huggingface.co/datasets/DarthVaderSenior/PreferenceHack">Dataset</a>
+        <a class="button secondary" href="#citation">BibTeX</a>
+        <a class="button secondary" href="../">Author Home</a>
+      </div>
+      <p class="release-note">
+        Public resources currently include the paper and the PreferenceHack dataset. The code release is pending review.
+      </p>
+    </header>
+
+    <figure class="lead-figure">
+      <img src="assets/Activation_RM_figure_v2.png" alt="Activation Reward Models pipeline showing few-shot activation steering followed by token probability scoring.">
+      <figcaption class="caption">
+        Activation RM fitting selects attention-head locations, extracts a denoised preference direction, and applies the intervention for reward scoring.
+      </figcaption>
+    </figure>
+
+    <section class="section" id="abstract">
+      <h2>Abstract</h2>
+      <div class="abstract">
+        <p>
+          Aligning LLMs and LMMs with human preferences usually relies on reward models trained from large preference datasets.
+          Activation Reward Models instead adapt to a new preference specification from only a handful of examples and require no model weight updates.
+        </p>
+        <p>
+          The method selects useful attention heads, extracts a compact preference direction, injects that signal during evaluation,
+          and scores responses through token probabilities rather than free-form judgments. We evaluate this mechanism on standard reward-modeling
+          benchmarks and on PreferenceHack, a paired-preference benchmark designed to test whether a reward model can reject superficial shortcuts
+          such as verbosity or overly positive phrasing.
+        </p>
+      </div>
+    </section>
+
+    <section class="section" id="method">
+      <h2>Method</h2>
+      <p class="section-intro">
+        The method keeps model weights fixed and stores only selected head locations plus activation statistics for the target criterion.
+      </p>
+      <div class="method-grid">
+        <div class="method-step">
+          <div class="num">1</div>
+          <h3>Few-Shot Head Selection</h3>
+          <p>Preference examples are formatted as pairwise judgments. Last-token attention-head activations are extracted, and REINFORCE selects heads that best capture the criterion.</p>
+        </div>
+        <div class="method-step">
+          <div class="num">2</div>
+          <h3>Preference Direction Extraction</h3>
+          <p>Selected activations are consolidated into a compact steering direction that captures the few-shot preference criterion.</p>
+        </div>
+        <div class="method-step">
+          <div class="num">3</div>
+          <h3>Token Probability Scoring</h3>
+          <p>At inference, the activation vector is injected at selected heads and the reward is computed from answer-token likelihoods, avoiding unstable free-form generation.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="preferencehack">
+      <h2>PreferenceHack</h2>
+      <p class="section-intro">
+        Reward hacking is a direct stress test for few-shot alignment: a model must prefer the response that satisfies the intended criterion,
+        not the response that merely looks reward-like. PreferenceHack formalizes this by pairing a preferred answer with a distractor that
+        exploits a known evaluator shortcut. The released splits test length, format, and positivity bias.
+      </p>
+      <div class="dataset-list">
+        <div class="dataset">
+          <h3>Stress Test</h3>
+          <p>Each pair isolates a criterion violation from presentation features that can mislead reward models.</p>
+        </div>
+        <div class="dataset">
+          <h3>Few-Shot Mitigation</h3>
+          <p>The evaluator receives a small set of examples that define the shortcut to avoid, then scores held-out pairs.</p>
+        </div>
+        <div class="dataset">
+          <h3>Public Release</h3>
+          <p>Length, format, and positivity splits are available on Hugging Face.</p>
+        </div>
+      </div>
+      <p class="note">
+        Each public split has 1,000 examples. Paper-style runs use 80 few-shot examples and evaluate on the remaining 920 examples.
+      </p>
+      <div class="code-panel" aria-label="PreferenceHack download commands">
+        <pre>from datasets import load_dataset
+
+ds = load_dataset("DarthVaderSenior/PreferenceHack")
+print(ds["length"][0])</pre>
+      </div>
+    </section>
+
+    <section class="section" id="results">
+      <h2>Results</h2>
+      <p class="section-intro">
+        Activation RM improves few-shot reward modeling on standard benchmarks and shows gains on the
+        PreferenceHack reward-hacking stress test. Values are accuracies in percent.
+      </p>
+
+      <div class="stat-grid">
+        <div class="stat">
+          <strong>77.24</strong>
+          <span>Qwen2.5-VL-7B RewardBench overall accuracy with Activation RM.</span>
+        </div>
+        <div class="stat">
+          <strong>69.27</strong>
+          <span>Qwen2.5-VL-7B MultimodalRewardBench overall consistency with Activation RM.</span>
+        </div>
+        <div class="stat">
+          <strong>79.89</strong>
+          <span>LLaVA-OneVision PreferenceHack format-bias accuracy with Activation RM.</span>
+        </div>
+        <div class="stat">
+          <strong>96.74</strong>
+          <span>Qwen2.5-VL PreferenceHack positivity-bias accuracy with Activation RM.</span>
+        </div>
+      </div>
+
+      <div class="table-heading">
+        <h3>Standard Reward-Modeling Benchmarks</h3>
+        <span>Overall and macro accuracy (%)</span>
+      </div>
+      <div class="table-wrap" aria-label="RewardBench and Multimodal RewardBench results">
+        <table>
+          <thead>
+            <tr>
+              <th>Method / Model</th>
+              <th>RewardBench Overall</th>
+              <th>RewardBench Macro</th>
+              <th>MRB Overall</th>
+              <th>MRB Macro</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="group-row"><td colspan="5">Reference</td></tr>
+            <tr>
+              <td>GPT-4o</td>
+              <td>87.63</td>
+              <td>86.10</td>
+              <td>55.43</td>
+              <td>57.92</td>
+            </tr>
+            <tr class="group-row"><td colspan="5">LLaVA-OneVision-7B</td></tr>
+            <tr>
+              <td>Zero-shot LLM-as-a-Judge</td>
+              <td>57.93</td>
+              <td>61.26</td>
+              <td>48.04</td>
+              <td>46.62</td>
+            </tr>
+            <tr>
+              <td>8-shot LLM-as-a-Judge</td>
+              <td>50.71</td>
+              <td>49.21</td>
+              <td>51.57</td>
+              <td>52.15</td>
+            </tr>
+            <tr>
+              <td>Activation RM</td>
+              <td class="best">68.84</td>
+              <td class="best">69.73</td>
+              <td class="best">53.75</td>
+              <td class="best">55.36</td>
+            </tr>
+            <tr class="group-row"><td colspan="5">Qwen2.5-VL-7B</td></tr>
+            <tr>
+              <td>Zero-shot LLM-as-a-Judge</td>
+              <td>71.97</td>
+              <td>73.32</td>
+              <td>66.88</td>
+              <td>65.56</td>
+            </tr>
+            <tr>
+              <td>8-shot LLM-as-a-Judge</td>
+              <td>74.56</td>
+              <td>75.52</td>
+              <td>65.98</td>
+              <td>64.66</td>
+            </tr>
+            <tr>
+              <td>Activation RM</td>
+              <td class="best">77.24</td>
+              <td class="best">77.17</td>
+              <td class="best">69.27</td>
+              <td class="best">68.62</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-heading">
+        <h3>PreferenceHack Reward-Hacking Test</h3>
+        <span>GPT-4o plus judge, generative-scoring, voting, and Activation RM baselines (%)</span>
+      </div>
+      <div class="table-wrap compact" aria-label="PreferenceHack reward-hacking results">
+        <table>
+          <thead>
+            <tr>
+              <th>Method / Model</th>
+              <th>Length Bias</th>
+              <th>Format Bias</th>
+              <th>Positivity Bias</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="group-row"><td colspan="4">Reference</td></tr>
+            <tr>
+              <td>GPT-4o</td>
+              <td>3.91</td>
+              <td>48.04</td>
+              <td>92.39</td>
+            </tr>
+            <tr class="group-row"><td colspan="4">LLaVA-OneVision-7B</td></tr>
+            <tr>
+              <td>Zero-shot LLM-as-a-Judge</td>
+              <td>14.46</td>
+              <td>44.89</td>
+              <td>59.24</td>
+            </tr>
+            <tr>
+              <td>8-shot LLM-as-a-Judge</td>
+              <td>23.15</td>
+              <td>37.50</td>
+              <td>57.17</td>
+            </tr>
+            <tr>
+              <td>Zero-shot Generative Scoring</td>
+              <td>45.54</td>
+              <td>47.17</td>
+              <td>76.96</td>
+            </tr>
+            <tr>
+              <td>3-sample voting</td>
+              <td>15.43</td>
+              <td>43.26</td>
+              <td>59.67</td>
+            </tr>
+            <tr>
+              <td>Activation RM</td>
+              <td class="best">49.24</td>
+              <td class="best">79.89</td>
+              <td class="best">90.11</td>
+            </tr>
+            <tr class="group-row"><td colspan="4">Qwen2.5-VL-7B</td></tr>
+            <tr>
+              <td>Zero-shot LLM-as-a-Judge</td>
+              <td>1.41</td>
+              <td>41.63</td>
+              <td>88.70</td>
+            </tr>
+            <tr>
+              <td>8-shot LLM-as-a-Judge</td>
+              <td>8.70</td>
+              <td>47.39</td>
+              <td>87.28</td>
+            </tr>
+            <tr>
+              <td>Zero-shot Generative Scoring</td>
+              <td>17.72</td>
+              <td>50.65</td>
+              <td>93.59</td>
+            </tr>
+            <tr>
+              <td>3-sample voting</td>
+              <td>1.41</td>
+              <td>41.85</td>
+              <td>88.70</td>
+            </tr>
+            <tr>
+              <td>Activation RM</td>
+              <td class="best">78.37</td>
+              <td class="best">68.26</td>
+              <td class="best">96.74</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="note">
+        PreferenceHack is used here to measure whether few-shot activation interventions help the evaluator reject reward-hacking shortcuts.
+        The paper contains the complete per-split benchmark tables and ablations.
+      </p>
+
+      <div class="figure-grid" style="margin-top: 28px;">
+        <figure class="figure-block">
+          <img src="assets/fig3_v2.png" alt="Qualitative multimodal examples with correct and incorrect judgments.">
+          <figcaption class="caption">Qualitative examples from multimodal reward-model evaluation.</figcaption>
+        </figure>
+        <figure class="figure-block">
+          <img src="assets/noise_robustness_figure.png" alt="Label noise robustness curves from the paper ablation.">
+          <figcaption class="caption">Noise-robustness ablation from the paper.</figcaption>
+        </figure>
+      </div>
+
+    </section>
+
+    <section class="section" id="citation">
+      <h2>Citation</h2>
+      <p class="section-intro">
+        Please cite the paper if you use Activation Reward Models or PreferenceHack.
+      </p>
+      <div class="citation">
+        <pre>@article{chai2025activationrm,
+  title={Activation Reward Models for Few-Shot Model Alignment},
+  author={Chai, Tianning and Mitra, Chancharik and Huang, Brandon and Gare, Gautam Rajendrakumar and Lin, Zhiqiu and Arbelle, Assaf and Karlinsky, Leonid and Feris, Rogerio and Darrell, Trevor and Ramanan, Deva and Herzig, Roei},
+  journal={arXiv preprint arXiv:2507.01368},
+  year={2025}
+}</pre>
+      </div>
+    </section>
+
+    <footer>
+      <span>Activation Reward Models for Few-Shot Model Alignment.</span>
+      <span>Updated July 2026.</span>
+    </footer>
+  </main>
+</body>
+</html>
