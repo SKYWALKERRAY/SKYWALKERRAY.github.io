@@ -57,6 +57,11 @@
       margin-top: 1.5rem;
     }
 
+    .paper-figure a {
+      display: block;
+      cursor: zoom-in;
+    }
+
     .paper-figure img {
       width: 100%;
       border-radius: 5px;
@@ -154,6 +159,60 @@
     .content pre {
       border-radius: 5px;
     }
+    @media screen and (max-width: 768px) {
+      .hero-body,
+      .section {
+        padding: 2rem 1.25rem;
+      }
+
+      .teaser .hero-body {
+        padding-top: 0;
+        padding-bottom: 1.5rem;
+      }
+
+      .stat-value {
+        font-size: 1.75rem;
+      }
+
+      .stat-label {
+        font-size: 0.8rem;
+      }
+
+      .table.results-table {
+        font-size: 0.8rem;
+      }
+
+      .table.results-table th,
+      .table.results-table td {
+        padding: 0.45em 0.5em;
+      }
+
+      .table.results-table th,
+      .table.results-table td:first-child {
+        white-space: normal;
+      }
+
+      .table.results-table th:first-child,
+      .table.results-table td:first-child {
+        min-width: 8.5rem;
+      }
+
+      .table.results-table th:first-child,
+      .table.results-table tr:not(.group-row) td:first-child {
+        position: sticky;
+        left: 0;
+        z-index: 1;
+        background: #fff;
+        box-shadow: 1px 0 0 #ededed;
+      }
+
+      .content pre {
+        padding: 1em;
+        font-size: 0.75rem;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+      }
+    }
   </style>
 </head>
 <body>
@@ -163,8 +222,8 @@
     <div class="container is-max-desktop">
       <div class="columns is-centered">
         <div class="column has-text-centered">
-          <h1 class="title is-1 publication-title">Activation Reward Models for Few-Shot Model Alignment</h1>
-          <div class="is-size-5 publication-authors">
+          <h1 class="title is-1 is-size-3-mobile publication-title">Activation Reward Models for Few-Shot Model Alignment</h1>
+          <div class="is-size-5 is-size-6-mobile publication-authors">
             <span class="author-block"><a href="https://skywalkerray.github.io/">Tianning Chai</a><sup>*</sup>,</span>
             <span class="author-block"><a href="https://chancharikmitra.github.io/">Chancharik Mitra</a><sup>*</sup>,</span>
             <span class="author-block"><a href="https://brandon3964.github.io/">Brandon Huang</a>,</span>
@@ -178,12 +237,12 @@
             <span class="author-block"><a href="https://roeiherz.github.io/">Roei Herzig</a></span>
           </div>
 
-          <div class="is-size-5 publication-authors">
+          <div class="is-size-5 is-size-6-mobile publication-authors">
             <span class="author-block">UC Berkeley,</span>
             <span class="author-block">CMU,</span>
             <span class="author-block">MIT-IBM Watson AI Lab</span>
           </div>
-          <div class="is-size-6 publication-authors">
+          <div class="is-size-6 is-size-7-mobile publication-authors">
             <span class="author-block"><sup>*</sup>Equal contribution</span>
           </div>
 
@@ -226,12 +285,12 @@
   <div class="container is-max-desktop">
     <div class="hero-body">
       <figure class="paper-figure">
-        <img src="assets/Activation_RM_figure_v2.png" alt="Activation Reward Models pipeline showing few-shot activation steering followed by token probability scoring.">
+        <a href="assets/Activation_RM_figure_v2.png" target="_blank"><img src="assets/Activation_RM_figure_v2.png" alt="Activation Reward Models pipeline showing few-shot activation steering followed by token probability scoring."></a>
         <figcaption class="figure-caption">
           Activation RM fitting selects attention-head locations, extracts a denoised preference direction, and applies the intervention for reward scoring.
         </figcaption>
       </figure>
-      <h2 class="subtitle has-text-centered">
+      <h2 class="subtitle has-text-centered has-text-left-mobile is-size-6-mobile">
         Activation RMs construct reward signals from a small preference pool by selecting attention heads,
         extracting denoised activation directions, and scoring candidates with Yes-token probabilities. The central question is whether
         those few examples can also help the evaluator resist reward-hacking shortcuts.
@@ -245,7 +304,7 @@
     <div class="columns is-centered has-text-centered">
       <div class="column is-four-fifths">
         <h2 class="title is-3">Abstract</h2>
-        <div class="content has-text-justified">
+        <div class="content has-text-justified has-text-left-mobile">
           <p>
             Aligning LLMs and LMMs with human preferences usually relies on reward models trained from large preference datasets.
             Activation Reward Models instead adapt to a new preference specification from only a handful of examples and require no model weight updates.
@@ -267,7 +326,7 @@
     <div class="columns is-centered has-text-centered">
       <div class="column is-four-fifths">
         <h2 class="title is-3">Method</h2>
-        <div class="content has-text-justified">
+        <div class="content has-text-justified has-text-left-mobile">
           <p>
             The method keeps model weights fixed and stores only selected head locations plus activation statistics for the target criterion.
           </p>
@@ -305,7 +364,7 @@
     <div class="columns is-centered has-text-centered">
       <div class="column is-four-fifths">
         <h2 class="title is-3">PreferenceHack</h2>
-        <div class="content has-text-justified">
+        <div class="content has-text-justified has-text-left-mobile">
           <p>
             Reward hacking is a direct stress test for few-shot alignment: a model must prefer the response that satisfies the intended criterion,
             not the response that merely looks reward-like. PreferenceHack formalizes this by pairing a preferred answer with a distractor that
@@ -355,7 +414,7 @@ print(ds["length"][0])</code></pre>
     <div class="columns is-centered has-text-centered">
       <div class="column is-four-fifths">
         <h2 class="title is-3">Results</h2>
-        <div class="content has-text-justified">
+        <div class="content has-text-justified has-text-left-mobile">
           <p>
             Activation RM improves few-shot reward modeling on standard benchmarks and shows gains on the
             PreferenceHack reward-hacking stress test. Values are accuracies in percent.
@@ -364,20 +423,20 @@ print(ds["length"][0])</code></pre>
       </div>
     </div>
 
-    <div class="columns has-text-centered">
-      <div class="column">
+    <div class="columns is-mobile is-multiline has-text-centered">
+      <div class="column is-half-mobile">
         <p class="stat-value">77.24</p>
         <p class="stat-label">Qwen2.5-VL-7B RewardBench overall accuracy with Activation RM.</p>
       </div>
-      <div class="column">
+      <div class="column is-half-mobile">
         <p class="stat-value">69.27</p>
         <p class="stat-label">Qwen2.5-VL-7B MultimodalRewardBench overall consistency with Activation RM.</p>
       </div>
-      <div class="column">
+      <div class="column is-half-mobile">
         <p class="stat-value">79.89</p>
         <p class="stat-label">LLaVA-OneVision PreferenceHack format-bias accuracy with Activation RM.</p>
       </div>
-      <div class="column">
+      <div class="column is-half-mobile">
         <p class="stat-value">96.74</p>
         <p class="stat-label">Qwen2.5-VL PreferenceHack positivity-bias accuracy with Activation RM.</p>
       </div>
@@ -549,11 +608,11 @@ print(ds["length"][0])</code></pre>
     </div>
 
     <figure class="paper-figure" style="margin-top: 2rem;">
-      <img src="assets/fig3_v2.png" alt="Qualitative multimodal examples with correct and incorrect judgments.">
+      <a href="assets/fig3_v2.png" target="_blank"><img src="assets/fig3_v2.png" alt="Qualitative multimodal examples with correct and incorrect judgments."></a>
       <figcaption class="figure-caption">Qualitative examples from multimodal reward-model evaluation.</figcaption>
     </figure>
     <figure class="paper-figure" style="margin-top: 2.5rem;">
-      <img src="assets/noise_robustness_figure.png" alt="Label noise robustness curves from the paper ablation.">
+      <a href="assets/noise_robustness_figure.png" target="_blank"><img src="assets/noise_robustness_figure.png" alt="Label noise robustness curves from the paper ablation."></a>
       <figcaption class="figure-caption">Noise-robustness ablation from the paper.</figcaption>
     </figure>
   </div>
