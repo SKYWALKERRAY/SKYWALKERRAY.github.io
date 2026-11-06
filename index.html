@@ -6,7 +6,7 @@
     <title>Tianning Chai</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&family=Open+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
     
     <style>
         :root {
@@ -17,6 +17,7 @@
             --accent: #0051ff;
             --border: 1px solid #e5e7eb;
             --mono: 'JetBrains Mono', monospace;
+            --sans: 'Open Sans', sans-serif;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -24,7 +25,7 @@
         body {
             background: var(--bg);
             color: var(--text);
-            font-family: var(--mono);
+            font-family: var(--sans);
             line-height: 1.6;
             max-width: 960px;
             margin: 0 auto;
@@ -72,6 +73,7 @@
             gap: 32px;
             font-size: 0.75rem;
             box-shadow: inset 0 0 0 1px rgba(0,0,0,0.03);
+            font-family: var(--mono);
         }
 
         .viz-col h3 {
@@ -142,6 +144,12 @@
         .item-desc a:hover { background: none; color: var(--accent); }
         .item-meta a { color: inherit; border-bottom: none; }
         .item-meta a:hover { background: none; color: var(--accent); }
+        .pub { display: flex; gap: 24px; align-items: flex-start; margin-bottom: 32px; }
+        .pub-thumb { flex: 0 0 26%; max-width: 240px; padding-top: 4px; }
+        .pub-thumb img { display: block; width: auto; height: auto; max-width: 100%; max-height: 170px; margin: 0 auto; border: var(--border); border-radius: 6px; }
+        .pub-text { flex: 1; min-width: 0; }
+        .pub .item-desc { margin-bottom: 6px; }
+        @media (max-width: 640px) { .pub-thumb { display: none; } }
         .medal { display: inline-block; font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 9px; border-radius: 999px; vertical-align: middle; margin-right: 7px; }
         .medal.gold { background: #fbf0c4; color: #8a6a00; border: 1px solid #eed98a; }
         .medal.silver { background: #eef1f4; color: #5a6573; border: 1px solid #d6dce2; }
@@ -264,32 +272,44 @@
 
     <h2 style="border:none; margin-bottom: 1rem;">Publications</h2>
     <ul class="list-container">
-        <li class="list-item">
-            <div class="item-title"><a href="https://agima.net/" target="_blank">Train An Imaginative Agent</a></div>
-            <div class="item-meta">Preprint 2026 &middot; <a href="https://agima.net/" target="_blank">Project</a> &middot; <a href="https://arxiv.org/abs/2610.26845" target="_blank">Paper</a></div>
-            <div class="item-desc">
-                <a href="https://gejiaxin.org/" target="_blank">Jiaxin Ge</a>*, <a href="https://www.junyi42.com/" target="_blank">Junyi Zhang</a>*, <span class="me">Tianning Chai*</span>, <a href="https://github.com/lukehanjun" target="_blank">Hanjun Yoo</a>, <a href="https://scholar.google.com/citations?user=M0AWMfsAAAAJ&amp;hl=en" target="_blank">Chenyang Wang</a>, <a href="https://xiuyuli.com/" target="_blank">Xiuyu Li</a>, <a href="https://weijiashi.notion.site/swj" target="_blank">Weijia Shi</a>, <a href="https://xudongfrankwang.github.io/" target="_blank">XuDong Wang</a>, <a href="https://www.sewonmin.com/" target="_blank">Sewon Min</a>, <a href="https://www.cs.washington.edu/people/faculty/lsz/" target="_blank">Luke Zettlemoyer</a>, <a href="https://people.eecs.berkeley.edu/~trevor/" target="_blank">Trevor Darrell</a>, <a href="https://havenfeng.github.io/" target="_blank">Haiwen Feng</a>
+        <li class="pub">
+            <div class="pub-thumb"><img src="images/thumb_agima.jpg" alt="Train An Imaginative Agent" width="600" height="227" loading="lazy"></div>
+            <div class="pub-text">
+                <div class="item-title"><a href="https://agima.net/" target="_blank">Train An Imaginative Agent</a></div>
+                <div class="item-desc">
+                    <a href="https://gejiaxin.org/" target="_blank">Jiaxin Ge</a>*, <a href="https://www.junyi42.com/" target="_blank">Junyi Zhang</a>*, <span class="me">Tianning Chai*</span>, <a href="https://github.com/lukehanjun" target="_blank">Hanjun Yoo</a>, <a href="https://scholar.google.com/citations?user=M0AWMfsAAAAJ&amp;hl=en" target="_blank">Chenyang Wang</a>, <a href="https://xiuyuli.com/" target="_blank">Xiuyu Li</a>, <a href="https://weijiashi.notion.site/swj" target="_blank">Weijia Shi</a>, <a href="https://xudongfrankwang.github.io/" target="_blank">XuDong Wang</a>, <a href="https://www.sewonmin.com/" target="_blank">Sewon Min</a>, <a href="https://www.cs.washington.edu/people/faculty/lsz/" target="_blank">Luke Zettlemoyer</a>, <a href="https://people.eecs.berkeley.edu/~trevor/" target="_blank">Trevor Darrell</a>, <a href="https://havenfeng.github.io/" target="_blank">Haiwen Feng</a>
+                </div>
+                <div class="item-meta"><a href="https://arxiv.org/abs/2610.26845" target="_blank">Preprint 2026</a> &middot; <a href="https://agima.net/" target="_blank">Project Page</a> &middot; <a href="https://arxiv.org/pdf/2610.26845" target="_blank">Paper</a></div>
             </div>
         </li>
-        <li class="list-item">
-            <div class="item-title"><a href="ActivationRM/">Activation Reward Models for Few-Shot Model Alignment</a></div>
-            <div class="item-meta">ACL Findings 2026 &middot; <a href="ActivationRM/">Project</a> &middot; <a href="https://arxiv.org/abs/2507.01368" target="_blank">Paper</a></div>
-            <div class="item-desc">
-                <span class="me">Tianning Chai*</span>, <a href="https://chancharikmitra.github.io/" target="_blank">Chancharik Mitra</a>*, <a href="https://brandon3964.github.io/" target="_blank">Brandon Huang</a>, <a href="https://ggare-cmu.github.io/" target="_blank">Gautam Rajendrakumar Gare</a>, <a href="https://linzhiqiu.github.io/" target="_blank">Zhiqiu Lin</a>, <a href="https://scholar.google.com/citations?user=uU_V_PsAAAAJ&hl=en" target="_blank">Assaf Arbelle</a>, <a href="https://scholar.google.com/citations?user=WbO7tjYAAAAJ&hl=en" target="_blank">Leonid Karlinsky</a>, <a href="https://www.rogerioferis.org/" target="_blank">Rogerio Feris</a>, <a href="https://people.eecs.berkeley.edu/~trevor/" target="_blank">Trevor Darrell</a>, <a href="https://www.cs.cmu.edu/~deva/" target="_blank">Deva Ramanan</a>, <a href="https://roeiherz.github.io/" target="_blank">Roei Herzig</a>
+        <li class="pub">
+            <div class="pub-thumb"><img src="images/thumb_activationrm.jpg" alt="Activation Reward Models for Few-Shot Model Alignment" width="600" height="280" loading="lazy"></div>
+            <div class="pub-text">
+                <div class="item-title"><a href="ActivationRM/">Activation Reward Models for Few-Shot Model Alignment</a></div>
+                <div class="item-desc">
+                    <span class="me">Tianning Chai*</span>, <a href="https://chancharikmitra.github.io/" target="_blank">Chancharik Mitra</a>*, <a href="https://brandon3964.github.io/" target="_blank">Brandon Huang</a>, <a href="https://ggare-cmu.github.io/" target="_blank">Gautam Rajendrakumar Gare</a>, <a href="https://linzhiqiu.github.io/" target="_blank">Zhiqiu Lin</a>, <a href="https://scholar.google.com/citations?user=uU_V_PsAAAAJ&hl=en" target="_blank">Assaf Arbelle</a>, <a href="https://scholar.google.com/citations?user=WbO7tjYAAAAJ&hl=en" target="_blank">Leonid Karlinsky</a>, <a href="https://www.rogerioferis.org/" target="_blank">Rogerio Feris</a>, <a href="https://people.eecs.berkeley.edu/~trevor/" target="_blank">Trevor Darrell</a>, <a href="https://www.cs.cmu.edu/~deva/" target="_blank">Deva Ramanan</a>, <a href="https://roeiherz.github.io/" target="_blank">Roei Herzig</a>
+                </div>
+                <div class="item-meta"><a href="https://aclanthology.org/2026.findings-acl.1709/" target="_blank">ACL Findings 2026</a> &middot; <a href="ActivationRM/">Project Page</a> &middot; <a href="https://aclanthology.org/2026.findings-acl.1709.pdf" target="_blank">Paper</a></div>
             </div>
         </li>
-        <li class="list-item">
-            <div class="item-title"><a href="https://arxiv.org/abs/2412.00142" target="_blank">Enhancing Few-Shot Vision-Language Classification with Large Multimodal Model Features</a></div>
-            <div class="item-meta">ICCV 2025</div>
-            <div class="item-desc">
-                <a href="https://chancharikmitra.github.io/" target="_blank">Chancharik Mitra</a>*, <a href="https://brandon3964.github.io/" target="_blank">Brandon Huang</a>*, <span class="me">Tianning Chai</span>, <a href="https://linzhiqiu.github.io/" target="_blank">Zhiqiu Lin</a>, <a href="https://scholar.google.com/citations?user=uU_V_PsAAAAJ&hl=en" target="_blank">Assaf Arbelle</a>, <a href="https://www.rogerioferis.org/" target="_blank">Rogerio Feris</a>, <a href="https://scholar.google.com/citations?user=WbO7tjYAAAAJ&hl=en" target="_blank">Leonid Karlinsky</a>, <a href="https://people.eecs.berkeley.edu/~trevor/" target="_blank">Trevor Darrell</a>, <a href="https://www.cs.cmu.edu/~deva/" target="_blank">Deva Ramanan</a>, <a href="https://roeiherz.github.io/" target="_blank">Roei Herzig</a>
+        <li class="pub">
+            <div class="pub-thumb"><img src="images/thumb_savs.jpg" alt="Enhancing Few-Shot Vision-Language Classification with Large Multimodal Model Features" width="600" height="557" loading="lazy"></div>
+            <div class="pub-text">
+                <div class="item-title"><a href="https://arxiv.org/abs/2412.00142" target="_blank">Enhancing Few-Shot Vision-Language Classification with Large Multimodal Model Features</a></div>
+                <div class="item-desc">
+                    <a href="https://chancharikmitra.github.io/" target="_blank">Chancharik Mitra</a>*, <a href="https://brandon3964.github.io/" target="_blank">Brandon Huang</a>*, <span class="me">Tianning Chai</span>, <a href="https://linzhiqiu.github.io/" target="_blank">Zhiqiu Lin</a>, <a href="https://scholar.google.com/citations?user=uU_V_PsAAAAJ&hl=en" target="_blank">Assaf Arbelle</a>, <a href="https://www.rogerioferis.org/" target="_blank">Rogerio Feris</a>, <a href="https://scholar.google.com/citations?user=WbO7tjYAAAAJ&hl=en" target="_blank">Leonid Karlinsky</a>, <a href="https://people.eecs.berkeley.edu/~trevor/" target="_blank">Trevor Darrell</a>, <a href="https://www.cs.cmu.edu/~deva/" target="_blank">Deva Ramanan</a>, <a href="https://roeiherz.github.io/" target="_blank">Roei Herzig</a>
+                </div>
+                <div class="item-meta"><a href="https://openaccess.thecvf.com/content/ICCV2025/html/Mitra_Enhancing_Few-Shot_Vision-Language_Classification_with_Large_Multimodal_Model_Features_ICCV_2025_paper.html" target="_blank">ICCV 2025</a> &middot; <a href="https://openaccess.thecvf.com/content/ICCV2025/papers/Mitra_Enhancing_Few-Shot_Vision-Language_Classification_with_Large_Multimodal_Model_Features_ICCV_2025_paper.pdf" target="_blank">Paper</a></div>
             </div>
         </li>
-        <li class="list-item">
-            <div class="item-title"><a href="papers/bridge-fl.pdf" target="_blank">Decentralized Federated Learning via Third-Party Bridge Collaboration</a></div>
-            <div class="item-meta">Preprint 2024 &middot; <a href="papers/bridge-fl.pdf" target="_blank">Paper</a></div>
-            <div class="item-desc">
-                <span class="me">Tianning Chai</span>, <a href="https://marswhu.github.io/" target="_blank">Mang Ye</a>, <a href="https://scholar.google.com/citations?user=aFoCI3MAAAAJ&hl=en" target="_blank">Wenke Huang</a>, <a href="https://scholar.google.com/citations?user=g2nqHBcAAAAJ&hl=en" target="_blank">Chun-Mei Feng</a>
+        <li class="pub">
+            <div class="pub-thumb"><img src="images/thumb_bridgefl.jpg" alt="Decentralized Federated Learning via Third-Party Bridge Collaboration" width="600" height="611" loading="lazy"></div>
+            <div class="pub-text">
+                <div class="item-title"><a href="papers/bridge-fl.pdf" target="_blank">Decentralized Federated Learning via Third-Party Bridge Collaboration</a></div>
+                <div class="item-desc">
+                    <span class="me">Tianning Chai</span>, <a href="https://marswhu.github.io/" target="_blank">Mang Ye</a>, <a href="https://scholar.google.com/citations?user=aFoCI3MAAAAJ&hl=en" target="_blank">Wenke Huang</a>, <a href="https://scholar.google.com/citations?user=g2nqHBcAAAAJ&hl=en" target="_blank">Chun-Mei Feng</a>
+                </div>
+                <div class="item-meta">Preprint 2024 &middot; <a href="papers/bridge-fl.pdf" target="_blank">Paper</a></div>
             </div>
         </li>
     </ul>
