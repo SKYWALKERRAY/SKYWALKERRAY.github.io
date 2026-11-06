@@ -130,7 +130,7 @@
             margin-bottom: 32px; 
             border-left: 2px solid #eee; 
             padding-left: 24px; 
-            transition: border-color 0.2s ease, transform 0.2s ease, opacity 0.6s ease; 
+            transition: border-color 0.2s ease, transform 0.2s ease; 
         }
         .list-item:hover { border-left-color: var(--accent); transform: translateX(6px); }
         .item-title { font-size: 1rem; font-weight: 700; margin-bottom: 6px; color: #000; }
@@ -211,17 +211,11 @@
         }
 
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-        .js .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.7s cubic-bezier(0.22, 0.61, 0.36, 1), transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1); }
-        .js .reveal.in { opacity: 1; transform: none; }
-        .js .list-item { opacity: 0; }
-        .js .list-item.in { opacity: 1; }
 
         @media (prefers-reduced-motion: reduce) {
-            .js .reveal, .js .list-item { opacity: 1 !important; transform: none !important; transition: none !important; }
             .token, .cell, .logit-bar-fill { transition: none !important; }
         }
     </style>
-    <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
 
@@ -234,7 +228,7 @@
         </div>
     </header>
 
-    <section class="reveal">
+    <section>
         <div class="intro">
         <p>
             I am Tianning Chai (Ray), currently a research intern at <strong><a href="https://ai.stanford.edu/" target="_blank">SAIL</a></strong> (Stanford Artificial Intelligence Laboratory), working with <strong><a href="https://maggiewang.org/" target="_blank">Maggie Wang</a></strong>, <strong><a href="https://zhanpenghe.github.io/" target="_blank">Zhanpeng He</a></strong>, <strong><a href="https://qingh097.github.io/" target="_blank">Raven Huang</a></strong> and Prof. <strong><a href="https://jiajunwu.com/" target="_blank">Jiajun Wu</a></strong>. Previously I was at <strong><a href="https://bair.berkeley.edu/" target="_blank">BAIR</a></strong> (Berkeley Artificial Intelligence Research), working with <strong><a href="https://gejiaxin.org/" target="_blank">Jiaxin Ge</a></strong>, <strong><a href="https://www.junyi42.com/" target="_blank">Junyi Zhang</a></strong>, <strong><a href="https://havenfeng.github.io/" target="_blank">Haiwen Feng</a></strong>, <strong><a href="https://roeiherz.github.io/" target="_blank">Roei Herzig</a></strong> and Prof. <strong><a href="https://people.eecs.berkeley.edu/~trevor/" target="_blank">Trevor Darrell</a></strong>. I obtained my B.Eng from <strong><a href="https://en.whu.edu.cn/" target="_blank">Wuhan University</a></strong>, advised by Prof. <strong><a href="https://marswhu.github.io/" target="_blank">Mang Ye</a></strong>.
@@ -243,7 +237,7 @@
         </div>
     </section>
 
-    <div class="viz-panel reveal">
+    <div class="viz-panel">
         <div class="viz-col">
             <h3>Input Stream (Window: 10)</h3>
             <div class="token-stream" id="token-list"></div>
@@ -268,7 +262,7 @@
         </div>
     </div>
 
-    <h2 class="reveal" style="border:none; margin-bottom: 1rem;">Publications</h2>
+    <h2 style="border:none; margin-bottom: 1rem;">Publications</h2>
     <ul class="list-container">
         <li class="list-item">
             <div class="item-title"><a href="https://agima.net/" target="_blank">Train An Imaginative Agent</a></div>
@@ -300,7 +294,7 @@
         </li>
     </ul>
 
-    <h2 class="reveal" style="border:none; margin-bottom: 1rem;">Honors &amp; Awards</h2>
+    <h2 style="border:none; margin-bottom: 1rem;">Honors &amp; Awards</h2>
     <ul class="list-container">
         <li class="list-item">
             <div class="item-title"><a href="https://en.whu.edu.cn/" target="_blank">Wuhan University</a></div>
@@ -318,9 +312,9 @@
         </li>
     </ul>
 
-    <footer class="reveal">
+    <footer>
         <div style="font-size: 0.75rem; color: #999; margin-top: 60px;">
-            &copy; 2025 Tianning Chai.
+            &copy; 2026 Tianning Chai.
         </div>
         
         <div class="secret-dot-container">
@@ -700,63 +694,6 @@
         }
         window.addEventListener('resize', resize);
 
-    </script>
-    <script>
-    (function () {
-        try {
-            var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-            var nameEl = document.getElementById('name');
-            var finalName = nameEl ? nameEl.textContent : '';
-
-            function showAll() {
-                var all = document.querySelectorAll('.reveal, .list-item');
-                for (var i = 0; i < all.length; i++) all[i].classList.add('in');
-                if (nameEl) nameEl.textContent = finalName;
-            }
-
-            if (reduce) { showAll(); return; }
-
-
-
-            var hero = [
-                document.querySelector('header.reveal'),
-                document.querySelector('section.reveal'),
-                document.querySelector('.viz-panel.reveal')
-            ];
-            for (var h = 0; h < hero.length; h++) {
-                (function (el, i) { if (el) setTimeout(function () { el.classList.add('in'); }, 150 + i * 150); })(hero[h], h);
-            }
-
-            var toObserve = [];
-            var hf = document.querySelectorAll('h2.reveal, footer.reveal');
-            for (var a = 0; a < hf.length; a++) toObserve.push(hf[a]);
-            var items = document.querySelectorAll('.list-item');
-            for (var b = 0; b < items.length; b++) { items[b].setAttribute('data-idx', b); toObserve.push(items[b]); }
-
-            if ('IntersectionObserver' in window) {
-                var io = new IntersectionObserver(function (entries) {
-                    for (var k = 0; k < entries.length; k++) {
-                        var e = entries[k];
-                        if (e.isIntersecting) {
-                            var el = e.target;
-                            var idx = el.getAttribute('data-idx');
-                            el.style.transitionDelay = (el.classList.contains('list-item') && idx) ? (parseInt(idx, 10) * 0.08) + 's' : '0s';
-                            el.classList.add('in');
-                            io.unobserve(el);
-                        }
-                    }
-                }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
-                for (var o = 0; o < toObserve.length; o++) io.observe(toObserve[o]);
-            } else {
-                for (var p = 0; p < toObserve.length; p++) toObserve[p].classList.add('in');
-            }
-        } catch (err) {
-            var allEls = document.querySelectorAll('.reveal, .list-item');
-            for (var z = 0; z < allEls.length; z++) allEls[z].classList.add('in');
-            var n = document.getElementById('name');
-            if (n) n.textContent = "Tianning Chai";
-        }
-    })();
     </script>
 </body>
 </html>
